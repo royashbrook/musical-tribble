@@ -6,7 +6,5 @@
 <h2>Welcome, {$user}!</h2>
 <h4>Congratulations! You got a token!</h4>
 <p><code>{$accessToken?.substring(0,20) + '...'}</code></p>
-<button on:click={getData}>Do something with the token!</button>
-{#if $data}
+<h4>Congratulations! You used the token to get secrets!</h4>
 <pre width="100%">{JSON.stringify($data,null,2)}</pre>
-{/if}

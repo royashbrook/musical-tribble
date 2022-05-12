@@ -4,10 +4,15 @@
   import Content from './Content.svelte'
   import Spinner from './components/Spinner.svelte'
   import { getAuth, accessToken } from './stores/auth/auth'
+  import { getData, data } from '../stores/graph/data'
 </script>
 
 {#await getAuth()}
   <Spinner message={'Logging in...'} />
 {:then _}
-  <Content />
+  {#await getData()}
+    <Spinner message={'Getting serets...'} />
+  {:then _}
+    <Content />
+  {/await}
 {/await}
