@@ -10,13 +10,13 @@
 - [Microsoft Graph API](https://docs.microsoft.com/en-us/azure/active-directory/develop/microsoft-graph-intro)
 - [Office 365](https://www.office.com/)
 
-This project is based on [stunning-bassoon](https://github.com/royashbrook/stunning-bassoon).
+This project is based on [laughing-barnacle](https://github.com/royashbrook/laughing-barnacle).
 
 It provides an example of:
 - A SPA application that
 - Auto authenticates using MSAL.js upon startup
 - Automatically gets a token for Microsoft Graph API upon successful authenication
-- Provides a button to pull a file from an O365 drive and display the contents
+- Pulls credentials to use for CosmosDB and Azure Blob Storage
 
 Note: Currently, this project uses some custom caching as the assumption is the files will be updated in a central location, and there may be multiple files that need to be merged from a standardized json format. This caching could be removed and instead of polling a folder for all files, then caching them, you could just pull a single file.
 
