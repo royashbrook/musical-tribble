@@ -1,9 +1,10 @@
 <script>
   export let searchResult
   import DownloadButton from './DownloadButton.svelte'
+  import { fade } from 'svelte/transition';
 </script>
 
-<div>
+<div transition:fade>
   <pre>{JSON.stringify(searchResult, null, 2)}</pre>
   <DownloadButton {searchResult} />
 </div>
