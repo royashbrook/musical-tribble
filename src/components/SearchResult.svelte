@@ -1,11 +1,11 @@
 <script>
   export let searchResult
+  import DownloadButton from './DownloadButton.svelte'
 </script>
 
 <div>
   <pre>{JSON.stringify(searchResult, null, 2)}</pre>
-  <!-- <a href="{getURL(doc['74'])}">{doc['74']}</a> -->
-  <!-- <button id="{doc['74']}" on:click={downloadFile(doc['74'])}>{doc['74']}</button> -->
+  <DownloadButton {searchResult} />
 </div>
 
 <style>
