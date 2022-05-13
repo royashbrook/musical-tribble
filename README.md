@@ -9,6 +9,7 @@
 - [Microsoft MSAL.js](https://docs.microsoft.com/en-us/azure/active-directory/develop/msal-overview)
 - [Microsoft Graph API](https://docs.microsoft.com/en-us/azure/active-directory/develop/microsoft-graph-intro)
 - [Office 365](https://www.office.com/)
+- [CosmosDB (SQLAPI)](https://docs.microsoft.com/en-us/azure/cosmos-db/sql/create-sql-api-nodejs)
 
 This project is based on [laughing-barnacle](https://github.com/royashbrook/laughing-barnacle).
 
@@ -25,7 +26,7 @@ Note: Currently, this project uses some custom caching as the assumption is the 
 
 ## Overview
 
-Installation is pretty simple once you have things setup.
+Installation is pretty simple once you have things setup. See [laughing-barnacle](https://github.com/royashbrook/laughing-barnacle) for initial setup comments. Note that you will have to have Cosmos and Azure Storage setup properly as well.
 
 - Clone this repository however you prefer
 - `npm install`
@@ -35,82 +36,78 @@ Installation is pretty simple once you have things setup.
 - and `graph.config.js`
   - const drive = 'drive id for your sharepoint site'
   - const item = 'item id for your sharepoint site'
+- and secret.json
+  - must be properly configured and stored on o365 to match graph config
 - `npm run start` and you are good to go!
 
 ## Getting details for auth.config.js
 
-As this project uses Office 365 for authentication and storage of the files, you must first have an Office365 subscription and access to Azure Portal so that you can create an application registration. There are lots of places to lookup how to do this. I'm going to point to [this](https://docs.microsoft.com/en-us/learn/paths/m365-msgraph-scenarios/) location on the Microsoft Learn site as it concerns specifics on how to do some of this setup with javascript and also points to a lot of the resources needed for setup.
-
-To start, you'll need an App registration setup propertly in the azure portal. [Here](https://docs.microsoft.com/en-us/learn/modules/msgraph-manage-files/2-exercise-configure-azure-active-directory-app) is a MS Learn page that shows exactly how I would register it.
-
-After all of the App registration magic is complete, you should have a tenantid and a client id and the `auth.config.js` file can be updated as appropriate.
-
-Note that wherever you deploy the app, you will need to make sure the app registration contains a redirect for that location. Currently the code will attempt to redirect based on whatever your current url is, but it will only work if you have previously set that up as a redirection inside of the App Registration in azure.
+See [laughing-barnacle](https://github.com/royashbrook/laughing-barnacle)
 
 ## Getting details for graph.config.js
 
-The file needs to be setup on O365 somewhere in sharepoint. This way you can secure the location for only people you want to have access to the file used on this site. You can handle this many ways, but in this example, I simply console log an error if you don't have access to the file. If you can't login, you won't even see the button. =)
+See [laughing-barnacle](https://github.com/royashbrook/laughing-barnacle)
 
-You'll need some basic knowledge on sharepoint admin for O365 to do this. You'll need a folder to store files in. All of the files should be .zip files and should contain json data that is zipped up and has a structure similar to this:
+## secrets.json?
 
-```
+Secrets.json is the file that will hold the keys for accessing Cosmos and Azure Storage. This file will be stored on O365, that you will access via MS Graph. This file needs to be in the format below and zipped up unless changes are made to remove the caching setup. See [laughing-barnacle](https://github.com/royashbrook/laughing-barnacle) for more details on that.
+
+```json
 {
-  "Results": {
-    "DatasetA": {
-      "DatatableA": [
-        {
-          "PropA": "ValueA1",
-          "PropB": "ValueB1",
-          "PropC": "ValueC1",
-          "PropD": "ValueD1"
-        },
-        {
-          "PropA": "ValueA2",
-          "PropB": "ValueB2",
-          "PropC": "ValueC2",
-          "PropD": "ValueD2"
-        }
-      ]
-    }
-  }
+  "cosmosConnection": "",
+  "cosmosDatabase": "",
+  "cosmosContainer": "",
+  "cosmosQuery": "",
+  "storageURI": "",
+  "storageSAS": ""
 }
 ```
 
-The caching setup is expecting files that meet this criteria, and it will merge them into one large object on the client side. This won't scale if you have GBs of data, but it is an example, and works great in smaller scenarios. It really just matters that you have a dataset, and a data table value. The contents of the object can actually be in any structure, I just have it structured here similar to a set of rows/columns.
+cosmosConnection must be a connection string with the AccountEndpoint and AccountKey values in it. This can be modified to test, but I thought this would give a good example of pulling these values out of a connection string as well, so I left it in. The rest of the values are self explanatory. We are using SAS key for storage.
 
-Now that you have a folder and you have at least one file out there, we need to update the `graph.config.js` with the location of this file. The folder will have a drive and item id associated with it. The easiest way I have found to get these is to use the [MS Graph Explorer](https://developer.microsoft.com/en-us/graph/graph-explorer) and simply run a search for the file you put out there.
+Note that CORS must be setup properly on both Cosmos and Azure Storage for this to work as-is.
 
-It helps to know how to work with Microsoft Graph here, but basically you need to login to the explorer site, go into modify permissions (currently in preview) tab and consent for Files.Read.All and Sites.Read.All. Maybe you just need one or the other, but I have both of those on and this worked for me. Click on search and choose driveitems. Update the request body with the file name you uploaded, then search. In your response you will see your file and there will be a parentReference that contains a driveId and an id value. Those are the values you need for graph.config.js. Here are some screenshots to help. =)
+Cosmos CORS:
 
-My consents:
+![image](https://user-images.githubusercontent.com/7390156/168329457-b0f3ce2f-bc10-4542-858d-f3c1a80f9296.png)
 
-![image](https://user-images.githubusercontent.com/7390156/165637741-78820963-2b78-4258-a3a5-0f7a6321d768.png)
+Azure Blob Storage CORS:
 
-Search action:
+![image](https://user-images.githubusercontent.com/7390156/168329371-1fe93359-fb09-40dd-8894-52e698ab35ee.png)
 
-![image](https://user-images.githubusercontent.com/7390156/165637688-929865c9-f14f-4886-b016-7ce154e614a6.png)
+Sample data used to seed both is in the sample_data folder. Cosmos.json was simply uploaded to Cosmos once the DB and collection were setup.
 
-Request modification (for sample.json.zip):
+Cosmos with sample data loaded:
 
-![image](https://user-images.githubusercontent.com/7390156/165637841-b422c351-0d33-4012-82ad-4820ad998fbe.png)
+![image](https://user-images.githubusercontent.com/7390156/168330661-c53a096d-5e9e-437a-8c33-385f6fcf458d.png)
 
-parentReference for that file:
+Azure Blob Storage with sample data loaded:
 
-![image](https://user-images.githubusercontent.com/7390156/165637877-03d218d7-5e97-445f-bfdb-b057742c7965.png)
-
-
+![image](https://user-images.githubusercontent.com/7390156/168330963-ce28310a-f6bf-4af7-b2a8-fbc420352a37.png)
 
 # See it
 
 Unfortunately, since part of the pattern here is auto-authentication using MSAL, you'll just keep seeing a 'redirect' to the microsoft login or an error in the console. But you can set things up yourself and deploy a copy to vercel to see it. =)
 
-[![vercel deployment](https://therealsujitk-vercel-badge.vercel.app/?app=laughing-barnacle&style=for-the-badge)](https://stunning-bassoon.vercel.app/)
+[![vercel deployment](https://therealsujitk-vercel-badge.vercel.app/?app=laughing-barnacle&style=for-the-badge)](https://musical-tribble.vercel.app/)
 
-https://laughing-barnacle.vercel.app/
+https://musical-tribble.vercel.app/
 
 Screenshot of the vercel site after I hit the button:
 
-![image](https://user-images.githubusercontent.com/7390156/165638078-4afa1cb8-671b-4b30-94b8-fd2a70ab4969.png)
+After auto login and getting secrets, default page shows like:
+
+![image](https://user-images.githubusercontent.com/7390156/168331161-951ba2e3-6a59-4c07-a5b7-38091630b75f.png)
+
+Then after typing some text and hitting enter:
+
+![image](https://user-images.githubusercontent.com/7390156/168331259-9dd177dc-cc37-461a-b546-68618cfe62f3.png)
+
+Changing criteria and hitting enter return fresh results. As this is just a sample, the file data in cosmos simply has a field called `searchTerms` which has a word list in it that we wildcard search. So searching for something like just the letter `g` will bring back more search results like:
+
+![image](https://user-images.githubusercontent.com/7390156/168331695-fc76c488-ebf9-49ed-a01c-b8a954ec2a3d.png)
+
+The download buttons are anchor wrapped buttons that use the SAS token to generate a direct link with a `target="blank"` so they will behave like any other link.
 
 
 # Note
