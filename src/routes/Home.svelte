@@ -1,29 +1,14 @@
 <script>
   import { getSearchResults, searchResults } from '../stores/search/search'
-  let searchString
+  import SearchResults from '../components/SearchResults.svelte'
   const handleChange = async (e) => {
-    await getSearchResults(searchString)
+    await getSearchResults(e.srcElement.value)
   }
 </script>
 
 <h4>Document Search:</h4>
 <input
   placeholder="Type a value to search and hit enter."
-  bind:value={searchString}
   on:change={handleChange} />
 
-<h5>Results:</h5>
-
-{#if $searchResults}
-    {#if $searchResults.length === 0}
-        <h5><code>No search results</code></h5>
-    {:else}
-        {#each $searchResults as searchResult}
-            <pre width="100%">{JSON.stringify(searchResult, null, 2)}</pre>
-        {/each}
-    {/if}
-{:else}
-    <h5><code>Please type a search value and hit enter</code></h5>
-{/if}
-
-
+<SearchResults />
