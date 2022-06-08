@@ -10,6 +10,7 @@
 - [Microsoft Graph API](https://docs.microsoft.com/en-us/azure/active-directory/develop/microsoft-graph-intro)
 - [Office 365](https://www.office.com/)
 - [CosmosDB (SQLAPI)](https://docs.microsoft.com/en-us/azure/cosmos-db/sql/create-sql-api-nodejs)
+- [Azure Blob Storage](https://azure.microsoft.com/en-us/services/storage/blobs/)
 
 This project is based on [laughing-barnacle](https://github.com/royashbrook/laughing-barnacle).
 
